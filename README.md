@@ -1,4 +1,4 @@
-# multiagent-network-flow
+# Optimal Multi-Robot Path Planning via Network Flow
 
 Optimal multi-robot path planning (multi-agent path finding, MAPF) on graphs with integer linear
 programming: a Python package (`mppflow`) and a browser demo of our
