@@ -1,0 +1,50 @@
+{
+ "source": "STAR'13 Fig. 2 (dynamic flow network and time-expanded network, T=4). Not present in ICRA'13 or TOR'16.",
+ "vertices": [
+  "s+",
+  "x",
+  "y",
+  "s-"
+ ],
+ "static_edges": [
+  [
+   "s+",
+   "x",
+   2
+  ],
+  [
+   "s+",
+   "y",
+   0
+  ],
+  [
+   "x",
+   "y",
+   1
+  ],
+  [
+   "x",
+   "s-",
+   2
+  ],
+  [
+   "y",
+   "s-",
+   1
+  ]
+ ],
+ "edge_semantics": "arc (u,t)->(v,t+c(e)) for every t with t+c(e) <= T (the c=0 arc s+->y is drawn vertically inside one time column); green holdover (v,t)->(v,t+1); all capacities 1; super source -> s+(0) only; s-(t) -> super sink for every t",
+ "fig2b_T4": {
+  "black_arcs": 19,
+  "green_arcs": 16
+ },
+ "max_flow_by_T": {
+  "0": 0,
+  "1": 1,
+  "2": 2,
+  "3": 2,
+  "4": 3,
+  "5": 3
+ },
+ "note": "The caption calls these 'forward' edges with c(e) = t' - t, but s+->y has c=0, i.e. a same-time arc; flow value is capped at 3 by the three unit arcs leaving s+(0)."
+}

@@ -1,0 +1,180 @@
+{
+ "name": "tor16_fig4_fig7_network",
+ "source": "YuLav16TOR pp.1166-1167, 1169 (PDF pp.4,5,7): Fig. 4(a) graph, Fig. 4(b) gadget, Fig. 5 (T=2 full network), Fig. 6 (compact), Fig. 7 (2-arc gadget)",
+ "graph": {
+  "type": "explicit",
+  "num_vertices": 6,
+  "edges": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    5
+   ]
+  ],
+  "vertex_names": [
+   "s1-",
+   "s2-",
+   "A",
+   "s1+",
+   "B",
+   "s2+"
+  ]
+ },
+ "starts": [
+  3,
+  5
+ ],
+ "goals": [
+  0,
+  1
+ ],
+ "robot_indexing": "robot 0 = r1 (s1+ -> s1-), robot 1 = r2 (s2+ -> s2-)",
+ "expected": {
+  "fig5_full_network_T2": {
+   "formula": {
+    "vertex_copies": 5,
+    "copy_vertices": 30,
+    "gadget_vertices": 20,
+    "vertices_total": 50,
+    "green_arcs": 12,
+    "blue_arcs": 12,
+    "gadget_arcs": 50,
+    "gadgets": 10,
+    "arcs_without_loopbacks": 74,
+    "loopback_arcs": 2,
+    "arcs_total": 76,
+    "x_variables_eq8": 152,
+    "goal_blue_arcs_x_i^t (bold blue in Fig.5)": 4
+   },
+   "built": {
+    "vertices_total": 50,
+    "arcs_total": 76,
+    "by_kind": {
+     "loop": 2,
+     "green": 12,
+     "blue": 12,
+     "g_in": 20,
+     "g_mid": 10,
+     "g_out": 20
+    }
+   }
+  },
+  "fig6_compact_network_T2": {
+   "vertices": 18,
+   "stay_arcs": 12,
+   "move_arcs": 20,
+   "arcs_total": 32,
+   "loopback_arcs": 2,
+   "arcs_total_with_loopbacks": 34,
+   "crossing_pairs_per_step": 5
+  },
+  "shortest_path_lengths": [
+   3,
+   3
+  ],
+  "makespan_lower_bound": 3,
+  "optimal_makespan": 4,
+  "optimal_plan_example": [
+   [
+    3,
+    5
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "feasible_by_T": {
+   "0": false,
+   "1": false,
+   "2": false,
+   "3": false,
+   "4": true,
+   "5": true
+  },
+  "full_network_maxflow_by_T": {
+   "0": 0,
+   "1": 0,
+   "2": 0,
+   "3": 1,
+   "4": 2,
+   "5": 2
+  },
+  "eq16_with_literal_paper_costs": {
+   "4": {
+    "eq16_min_with_paper_costs": 8,
+    "eq16_max_with_paper_costs": 8,
+    "n*T": 8,
+    "true_min_total_distance": 6.0
+   },
+   "5": {
+    "eq16_min_with_paper_costs": 10,
+    "eq16_max_with_paper_costs": 10,
+    "n*T": 10,
+    "true_min_total_distance": 6.0
+   },
+   "6": {
+    "eq16_min_with_paper_costs": 12,
+    "eq16_max_with_paper_costs": 12,
+    "n*T": 12,
+    "true_min_total_distance": 6.0
+   }
+  },
+  "theorem1_flows_vs_paths_single_robot": {
+   "1": {
+    "single_robot_flows_r1": 0,
+    "single_robot_paths_r1": 0
+   },
+   "2": {
+    "single_robot_flows_r1": 0,
+    "single_robot_paths_r1": 0
+   },
+   "3": {
+    "single_robot_flows_r1": 1,
+    "single_robot_paths_r1": 1
+   },
+   "4": {
+    "single_robot_flows_r1": 12,
+    "single_robot_paths_r1": 4
+   },
+   "single_edge_stay_T1": {
+    "flows": 2,
+    "paths": 1
+   }
+  }
+ },
+ "notes": [
+  "The instance drawn in Fig. 5 (T=2) is infeasible: both shortest paths have length 3 and the optimum makespan is 4, so the T=2 network only admits a multiflow of value < 2 (computed maxflow value per T is recorded).",
+  "Fig. 5/6 draw the loopback e2 (and the two 'bold blue' goal arcs of r2) at row 2 (junction A), not at row 1 (s2-); the s2- label sits between the two rows. Under Fig. 4(a)'s topology this is inconsistent.",
+  "Theorem 1 claims a bijection, but the full network lets a robot 'stay' at u by u(t)\u2019 -> merge -> split -> u(t+1) through any incident gadget instead of the green arc; several flows map to the same path (counts recorded). The map flows->paths is surjective onto collision-free plans but not injective.",
+  "Full network per gadget: 2 internal vertices, 5 arcs (2 in, 1 middle with cost 1, 2 out). |V'| = |V|(2T+1) + 2|E|T, |E'| = 2|V|T + 5|E|T + n.",
+  "Compact (Fig. 6/7): |V'| = |V|(T+1), |E'| = |V|T + 2|E|T (+ n loopbacks); 2 variables per robot per gadget instead of 5; ratio of arcs for this graph = 32/74."
+ ]
+}

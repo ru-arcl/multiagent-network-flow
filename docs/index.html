@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multirobot Path Planning Demo</title>
+<meta name="description" content="Interactive demo of our paper Optimal Multirobot Path Planning on Graphs (Yu and LaValle, IEEE T-RO 2016): play optimal and k-way split plans, inspect the time-expanded network and solve small instances live in the browser.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/demo.css">
+<script>
+  /* Apply a stored theme before the page paints (no flash). */
+  (function () {
+    try {
+      var t = window.localStorage.getItem('mppflow-demo-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* storage blocked: follow the system theme */ }
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to the demo</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="header-text">
+      <p class="kicker">Interactive demo &middot; IEEE Transactions on Robotics 32(5), 2016</p>
+      <h1>Optimal Multirobot Path Planning on Graphs: Complete Algorithms and Effective Heuristics</h1>
+      <p class="authors">Jingjin Yu and Steven M. LaValle</p>
+      <p class="lede">Labeled robots share a graph and must all reach their own goals without meeting at a
+        vertex or swapping along an edge; we turn this into an integer flow on a time-expanded
+        network, solve it exactly as an integer linear program, and split big instances over time
+        to get near-optimal plans fast.</p>
+    </div>
+    <button type="button" id="theme-toggle" class="icon-btn theme-toggle"
+            aria-label="Use dark theme" title="Toggle light or dark theme">
+      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+      <span class="theme-label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <noscript><p class="notice">This demo needs JavaScript.</p></noscript>
+  <p id="load-error" class="notice" role="alert" hidden></p>
+  <p id="hash-note" class="notice" role="status" hidden></p>
+
+  <section class="playground" aria-label="Planner">
+    <!-- ============ Stage: the graph and the robots ============ -->
+    <div class="card stage">
+      <div class="stage-head">
+        <h2 id="view-title">Map</h2>
+        <p id="view-sub" class="stage-sub"></p>
+      </div>
+      <div id="view" class="view" tabindex="0" role="group" aria-roledescription="plan viewer"
+           aria-label="Graph view. Press space to play or pause, the arrow keys to step.">
+        <svg id="view-svg" role="img" aria-labelledby="view-svg-title" preserveAspectRatio="xMidYMid meet">
+          <title id="view-svg-title">Graph with robots</title>
+        </svg>
+        <p id="view-empty" class="view-empty" hidden></p>
+      </div>
+      <div class="playbar" id="playbar">
+        <div class="pb-buttons">
+          <button type="button" class="icon-btn" id="pb-reset" aria-label="Back to t = 0" title="Back to start">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h2.5v14H5zM19 5l-10 7 10 7z"/></svg></button>
+          <button type="button" class="icon-btn" id="pb-back" aria-label="Step back one time step" title="Step back">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-8 7 8 7z"/></svg></button>
+          <button type="button" class="icon-btn primary" id="pb-play" aria-label="Play" title="Play / pause (space)">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5l13 7.5-13 7.5z"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+          <button type="button" class="icon-btn" id="pb-fwd" aria-label="Step forward one time step" title="Step forward">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l8 7-8 7z"/></svg></button>
+        </div>
+        <div class="pb-scrub">
+          <input type="range" id="pb-time" min="0" max="1" step="0.01" value="0" aria-label="Time">
+          <div id="pb-ticks" class="pb-ticks" aria-hidden="true"></div>
+        </div>
+        <p class="pb-status"><span id="pb-label" class="pb-label">t = 0</span>
+          <span id="pb-piece" class="pb-piece" hidden></span></p>
+        <p id="pb-announce" class="sr-only" aria-live="polite"></p>
+      </div>
+      <div class="view-opts">
+        <label class="inline">Speed
+          <select id="pb-speed" aria-label="Playback speed in time steps per second">
+            <option value="0.5">0.5 steps/s</option>
+            <option value="1" selected>1 step/s</option>
+            <option value="2">2 steps/s</option>
+            <option value="4">4 steps/s</option>
+            <option value="8">8 steps/s</option>
+          </select></label>
+        <label class="inline">Zoom
+          <select id="view-zoom" aria-label="Zoom the graph view">
+            <option value="1" selected>fit</option>
+            <option value="1.5">1.5&times;</option>
+            <option value="2">2&times;</option>
+            <option value="3">3&times;</option>
+          </select></label>
+        <label class="inline">Highlight
+          <select id="hl-select" aria-label="Highlight the path of one robot"><option value="-1">no robot</option></select></label>
+        <label class="check"><input type="checkbox" id="opt-goals" checked> goals</label>
+        <label class="check"><input type="checkbox" id="opt-inter" checked> intermediate goals</label>
+        <label class="check"><input type="checkbox" id="opt-colors"> color robots</label>
+        <label class="check"><input type="checkbox" id="opt-ids"> vertex ids</label>
+        <label class="check"><input type="checkbox" id="opt-transpose"> transpose</label>
+      </div>
+      <figure id="goal-inset" class="goal-inset" hidden>
+        <svg id="goal-svg" role="img" aria-labelledby="goal-svg-title" preserveAspectRatio="xMidYMid meet">
+          <title id="goal-svg-title">Goal configuration</title>
+        </svg>
+        <figcaption><strong>Goal configuration</strong> (as in Fig. 1(b)): robot <em>i</em> must end on the
+          unshaded disc <em>i</em>. <span id="goal-inset-note"></span></figcaption>
+      </figure>
+      <ul class="legend" aria-label="Legend">
+        <li><svg viewBox="-1 -1 2 2" aria-hidden="true"><circle class="lg-robot" r="0.8"/></svg>robot (shaded, as the paper draws starts)</li>
+        <li><svg viewBox="-1 -1 2 2" aria-hidden="true"><circle class="lg-goal" r="0.8"/></svg>goal (unshaded)</li>
+        <li><svg viewBox="-1 -1 2 2" aria-hidden="true"><circle class="lg-home" r="0.8"/></svg>robot at its goal (green ring)</li>
+        <li id="legend-inter" hidden><svg viewBox="-1 -1 2 2" aria-hidden="true"><circle class="lg-inter" r="0.8"/></svg>intermediate goal that ends the current piece (dotted ring, as in Fig. 8(b))</li>
+        <li id="legend-inter-tag" hidden><svg class="wide" viewBox="-1.5 -1 3 2" aria-hidden="true"><rect class="lg-inter-tag" x="-1.15" y="-0.7" width="2.3" height="1.4" rx="0.7"/><text class="lg-inter-tag-t" x="0" y="0.05">7</text></svg>tag on a dotted ring: whose intermediate goal it is, when another robot or goal disc covers its number (no tag: the disc inside shows the owner)</li>
+        <li id="legend-ticks" hidden><svg class="wide" viewBox="0 0 3 2" aria-hidden="true"><path class="lg-track" d="M0.1 0.7 H2.9"/><rect class="lg-tick" x="1.3" y="1" width="0.4" height="0.9" rx="0.1"/></svg>tick under the time bar: the next piece of the split starts there</li>
+        <li id="legend-hl"><svg class="wide" viewBox="0 0 3 2" aria-hidden="true"><circle class="lg-hl-ring" cx="0.6" cy="1.2" r="0.5"/><path class="lg-path" d="M0.6 1.2 L1.5 0.6 L2.4 1"/><circle class="lg-hl-goal" cx="2.4" cy="1" r="0.5"/></svg>highlighted robot: its start (ring), path and goal (dashed ring)</li>
+        <li id="legend-obstacle" hidden><svg viewBox="0 0 2 2" aria-hidden="true"><rect class="lg-obstacle" x="0.2" y="0.2" width="1.6" height="1.6" rx="0.2"/></svg>obstacle</li>
+      </ul>
+      <p class="view-hint" id="view-hint">Point at a robot to highlight its path, goal and intermediate goal;
+        click or tap it to keep the highlight, and again (or the background) to clear it. The Highlight menu
+        under the view does the same.</p>
+    </div>
+
+    <!-- ============ Side panel ============ -->
+    <div class="side">
+      <section class="card" id="map-card" aria-labelledby="map-h">
+        <h2 id="map-h" class="card-title">Instance</h2>
+        <div id="map-pick">
+          <label for="map-select" class="field-label">Map</label>
+          <select id="map-select"></select>
+          <p id="map-caption" class="caption"></p>
+          <p class="source"><span class="source-tag">Source</span> <span id="map-source"></span></p>
+          <p id="map-stats" class="stats"></p>
+          <button type="button" id="edit-btn" class="btn">Edit your own instance</button>
+        </div>
+
+        <div id="edit-panel" hidden>
+          <p class="caption">Drag the shaded discs (starts) or the unshaded discs (goals) to other
+            vertices, or click cells to add and remove obstacles; dropping on another robot swaps
+            the two. With the keyboard, focus a disc and use the arrow keys.</p>
+          <fieldset class="seg" id="edit-tool">
+            <legend>Edit</legend>
+            <input type="radio" name="edit-tool" id="tool-starts" value="starts" checked><label for="tool-starts">Starts</label>
+            <input type="radio" name="edit-tool" id="tool-goals" value="goals"><label for="tool-goals">Goals</label>
+            <input type="radio" name="edit-tool" id="tool-obstacles" value="obstacles"><label for="tool-obstacles">Obstacles</label>
+            <input type="radio" name="edit-tool" id="tool-play" value="play" disabled><label for="tool-play" title="Play the live plan (solve first)">Play plan</label>
+          </fieldset>
+          <div class="edit-grid two">
+            <label>Rows <select id="ed-rows"></select></label>
+            <label>Columns <select id="ed-cols"></select></label>
+          </div>
+          <fieldset class="edit-random" id="ed-random-set" aria-describedby="ed-random-note">
+            <legend>New random instance</legend>
+            <p class="caption" id="ed-random-note">These settings apply only when you press Randomize, which replaces the
+              instance with a random one on a grid of the size above (the generator of the paper's grid instances).</p>
+            <div class="edit-grid">
+              <label>Robots <input type="number" id="ed-n" min="1" max="64" value="6" inputmode="numeric"></label>
+              <label>Obstacles
+                <select id="ed-frac">
+                  <option value="0">0%</option><option value="0.1">10%</option><option value="0.2" selected>20%</option>
+                  <option value="0.25">25%</option><option value="0.3">30%</option>
+                </select></label>
+              <label>Seed <input type="number" id="ed-seed" min="0" max="2147483647" step="1" value="1" inputmode="numeric"></label>
+            </div>
+            <button type="button" id="ed-random" class="btn">Randomize</button>
+          </fieldset>
+          <div class="btn-row">
+            <button type="button" id="ed-add" class="btn small">Add robot</button>
+            <button type="button" id="ed-remove" class="btn small">Remove robot</button>
+            <button type="button" id="ed-swap" class="btn small">Swap starts and goals</button>
+          </div>
+          <p id="edit-msg" class="msg" aria-live="polite"></p>
+          <p id="edit-stats" class="stats"></p>
+          <button type="button" id="edit-done" class="btn">Back to the paper's maps</button>
+        </div>
+      </section>
+
+      <section class="card" id="plan-card" aria-labelledby="plan-h">
+        <h2 id="plan-h" class="card-title">Plan</h2>
+        <fieldset class="seg" id="src-set" hidden>
+          <legend>Plan from</legend>
+          <input type="radio" name="src" id="src-computed" value="computed" checked><label for="src-computed">ILP (ours)</label>
+          <input type="radio" name="src" id="src-paper" value="paper"><label for="src-paper">Paper figure</label>
+        </fieldset>
+        <fieldset class="seg wrap4" id="obj-set">
+          <legend>Objective</legend>
+          <input type="radio" name="obj" id="obj-makespan" value="makespan" checked><label for="obj-makespan">Makespan</label>
+          <input type="radio" name="obj" id="obj-total_time" value="total_time"><label for="obj-total_time">Total arrival time</label>
+          <input type="radio" name="obj" id="obj-total_distance" value="total_distance"><label for="obj-total_distance">Total distance</label>
+          <input type="radio" name="obj" id="obj-max_distance" value="max_distance"><label for="obj-max_distance">Max distance</label>
+        </fieldset>
+        <fieldset class="seg" id="k-set">
+          <legend>k-way split</legend>
+          <input type="radio" name="k" id="k-1" value="1" checked><label for="k-1" title="exact (no split)">k = 1</label>
+          <input type="radio" name="k" id="k-2" value="2"><label for="k-2">2</label>
+          <input type="radio" name="k" id="k-4" value="4"><label for="k-4">4</label>
+          <input type="radio" name="k" id="k-8" value="8"><label for="k-8">8</label>
+          <input type="radio" name="k" id="k-16" value="16"><label for="k-16">16</label>
+        </fieldset>
+        <p id="pick-note" class="pick-note" hidden></p>
+        <p id="plan-status" class="plan-status"></p>
+        <div class="table-wrap" id="metrics-wrap">
+          <div class="table-scroll" id="metrics-scroll">
+            <table id="metrics" class="metrics">
+              <caption class="sr-only">Plan metrics, lower bounds and optimality ratios</caption>
+              <thead></thead><tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <p id="metrics-hint" class="net-hint" hidden></p>
+        <p class="footnote">Ratio = objective / lower bound, the paper's conservative optimality
+          ratio (Sec. VI-A); the bounds ignore all other robots, so a ratio above 1 can still be optimal.</p>
+        <dl id="facts" class="facts"></dl>
+      </section>
+
+      <section class="card" id="live-card" aria-labelledby="live-h">
+        <h2 id="live-h" class="card-title">Solve live in your browser</h2>
+        <p id="live-info" class="caption"></p>
+        <div class="btn-row">
+          <button type="button" id="live-btn" class="btn primary">Solve live in your browser</button>
+          <button type="button" id="live-cancel" class="btn" hidden>Cancel</button>
+          <label class="inline">Time limit
+            <select id="live-tl" aria-label="Time limit for the whole live solve (all pieces of a split together)">
+              <option value="10">10 s</option><option value="30" selected>30 s</option>
+              <option value="60">60 s</option><option value="120">120 s</option>
+            </select></label>
+        </div>
+        <div id="live-progress" class="progress" hidden>
+          <div class="progress-bar" role="progressbar" aria-label="Solving" aria-valuemin="0" aria-valuemax="100" id="live-bar"><span></span></div>
+          <span id="live-elapsed" class="elapsed">0.0 s</span>
+        </div>
+        <div id="live-result" class="live-result" aria-live="polite" tabindex="-1"></div>
+        <fieldset class="seg" id="play-set" hidden>
+          <legend>Play</legend>
+          <input type="radio" name="play" id="play-pre" value="pre" checked><label for="play-pre">Precomputed</label>
+          <input type="radio" name="play" id="play-live" value="live"><label for="play-live">Live result</label>
+        </fieldset>
+      </section>
+    </div>
+
+    <!-- ============ Time-expanded network ============ -->
+    <section class="card net-card v-compact" id="net-card" aria-labelledby="net-h">
+      <div class="net-head">
+        <div>
+          <h2 id="net-h">Time-expanded network</h2>
+          <p class="caption" id="net-caption"><span class="compact-only">As in Figs. 6 and 7, every vertex gets
+            one copy per time step (columns, left to right: t = 0 &hellip; T; rows: vertices); the blue
+            vertex-capacity arcs of Fig. 5 are gone, and the two directions of an edge share capacity 1.</span><span
+            class="full-only">As in Fig. 5, every vertex gets two copies per time step, v(t) and v(t)&prime;
+            (columns 0, 1, 1&prime;, &hellip;, T, T&prime;; rows: vertices), joined by a blue arc of capacity 1, and
+            every edge gets a merge-split gadget between each v(t)&prime; and the next step.</span> A plan is a set of vertex-disjoint unit flows, one per robot, closed by the
+            dashed loopback arcs from each goal at time T back to its start; the ILP maximizes the flow
+            through the loopbacks. The colored lines are the current plan's flows.</p>
+        </div>
+      </div>
+      <div class="net-controls">
+        <fieldset class="seg" id="net-variant">
+          <legend>Drawing</legend>
+          <input type="radio" name="netv" id="netv-compact" value="compact" checked><label for="netv-compact">Compact (Figs. 6, 7)</label>
+          <input type="radio" name="netv" id="netv-full" value="full"><label for="netv-full">Full (Fig. 5)</label>
+        </fieldset>
+        <label class="slider-label" for="net-T">Horizon T = <span id="net-T-out">4</span></label>
+        <input type="range" id="net-T" min="1" max="8" step="1" value="4" aria-label="Horizon T">
+        <label class="check"><input type="checkbox" id="net-overlay" checked> plan flow</label>
+      </div>
+      <p id="net-info" class="stats"></p>
+      <p id="net-announce" class="sr-only" aria-live="polite"></p>
+      <p id="net-hint" class="net-hint" hidden></p>
+      <div class="net-wrap" id="net-wrap">
+        <div class="net-scroll" id="net-scroll">
+          <svg id="net-svg" role="img" aria-labelledby="net-svg-title"><title id="net-svg-title">Time-expanded network</title></svg>
+        </div>
+      </div>
+      <ul class="legend net-legend" aria-label="Network legend">
+        <li><svg viewBox="0 0 20 8" aria-hidden="true"><line class="na-green" x1="1" y1="4" x2="19" y2="4"/></svg>wait arc <span class="compact-only">(v(t) &rarr; v(t+1))</span><span class="full-only">(v(t)&prime; &rarr; v(t+1))</span></li>
+        <li class="full-only"><svg viewBox="0 0 20 8" aria-hidden="true"><line class="na-blue" x1="1" y1="4" x2="19" y2="4"/></svg>vertex-capacity arc (v(t) &rarr; v(t)&prime;)</li>
+        <li><svg viewBox="0 0 20 8" aria-hidden="true"><line class="na-gadget" x1="1" y1="4" x2="19" y2="4"/></svg><span class="compact-only">move arc (u(t) &rarr; v(t+1), one per direction)</span><span class="full-only">move arcs (merge-split gadget, Fig. 4(b))</span></li>
+        <li><svg viewBox="0 0 20 8" aria-hidden="true"><line class="na-loop" x1="1" y1="4" x2="19" y2="4"/></svg>loopback arc, one per robot (dashed; in the robot's color while &ldquo;plan flow&rdquo; is on)</li>
+        <li><svg viewBox="0 0 20 8" aria-hidden="true"><line class="na-flow a" x1="1" y1="2.5" x2="19" y2="2.5"/><line class="na-flow b" x1="1" y1="5.5" x2="19" y2="5.5"/></svg>plan flow: one thick line per robot, in its own color</li>
+        <li><svg viewBox="0 0 20 8" aria-hidden="true"><line class="n-cursor" x1="10" y1="0" x2="10" y2="8"/><line class="n-cursor-line" x1="10" y1="0" x2="10" y2="8"/></svg>current time step of the player (band)</li>
+      </ul>
+    </section>
+  </section>
+
+
+  <!-- ============ How it works ============ -->
+  <section class="how" aria-labelledby="how-h">
+    <h2 id="how-h">How it works</h2>
+    <div class="how-grid">
+      <article class="card">
+        <h3>1. Time expansion</h3>
+        <p>Fix a horizon T. Copy every vertex v of the graph 2T + 1 times: v(0), v(1), v(1)&prime;, &hellip;,
+          v(T), v(T)&prime;. Green arcs v(t)&prime; &rarr; v(t+1) let a robot wait; blue arcs v(t) &rarr; v(t)&prime;
+          have capacity 1, so no two robots meet at a vertex. Every collision-free plan with at most T steps
+          gives an integer multiflow of value n, and every such flow gives a plan (Theorem 1). Several flows can
+          give the same plan, so the map is onto but not one-to-one (<a
+          href="https://github.com/ru-arcl/multiagent-network-flow/blob/main/docs/notes/paper-errata.md#e4">erratum
+          E4</a>).</p>
+      </article>
+      <article class="card">
+        <h3>2. The merge-split gadget</h3>
+        <figure class="gadget">
+          <svg viewBox="0 0 200 110" role="img" aria-labelledby="gadget-t">
+            <title id="gadget-t">Merge-split gadget: u(t)&prime; and v(t)&prime; merge into one unit arc that splits into u(t+1) and v(t+1)</title>
+            <defs><marker id="g-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="g-head"/></marker></defs>
+            <g class="g-arcs">
+              <line x1="30" y1="25" x2="80" y2="53" marker-end="url(#g-arrow)"/>
+              <line x1="30" y1="85" x2="80" y2="57" marker-end="url(#g-arrow)"/>
+              <line class="g-mid" x1="86" y1="55" x2="114" y2="55" marker-end="url(#g-arrow)"/>
+              <line x1="120" y1="53" x2="170" y2="25" marker-end="url(#g-arrow)"/>
+              <line x1="120" y1="57" x2="170" y2="85" marker-end="url(#g-arrow)"/>
+            </g>
+            <g class="g-nodes">
+              <circle cx="26" cy="23" r="4"/><circle cx="26" cy="87" r="4"/><circle cx="83" cy="55" r="4"/>
+              <circle cx="117" cy="55" r="4"/><circle cx="174" cy="23" r="4"/><circle cx="174" cy="87" r="4"/>
+            </g>
+            <g class="g-text"><text x="26" y="12">u(t)&prime;</text><text x="26" y="106">v(t)&prime;</text>
+              <text x="174" y="12">u(t+1)</text><text x="174" y="106">v(t+1)</text></g>
+          </svg>
+        </figure>
+        <p>Each edge {u, v} and step t gets the gadget of Fig. 4(b): both directions share one middle arc
+          of capacity 1, so two robots cannot swap along an edge (a head-on collision). The compact model
+          (Figs. 6, 7) keeps two binary variables per robot, edge and time step (one per direction),
+          plus one per robot, vertex and step for waiting, and drops arcs no robot can reach.</p>
+      </article>
+      <article class="card">
+        <h3>3. Integer linear programs</h3>
+        <p>Every robot gets its own binary flow variables. For the <strong>makespan</strong>, maximize the
+          flow on the loopback arcs and raise T from the shortest-path lower bound until all n robots
+          arrive (Algorithm 1). <strong>Total arrival time</strong>, <strong>total distance</strong> and
+          <strong>max distance</strong> use the same network with different costs and a horizon search,
+          so all four algorithms are complete and optimal.</p>
+      </article>
+      <article class="card">
+        <h3>4. The k-way split</h3>
+        <p>Exact models grow quickly with T. The heuristic cuts every robot's shortest path in the
+          middle, uses the midpoints (moved to free vertices when they clash) as intermediate goals,
+          and solves the 2 halves; repeating gives 4, 8 or 16 pieces, glued end to end. The pieces are often
+          smaller models than the exact one, but not always: on a crowded graph a piece can need as many
+          steps as the whole plan (the 9-puzzle's 4-way split has pieces of 3, 5, 4 and 4 steps against an
+          optimal makespan of 4), and its model is then larger. <a href="#map=tor16-fig8-split&amp;plan=makespan%2Fk2" class="map-link">Open the split example of Fig. 8 with
+          k = 2</a> to see the cost: makespan 5 instead of 4.</p>
+      </article>
+    </div>
+    <article class="card about">
+      <h3>About this demo</h3>
+      <p>The plans marked <em>precomputed</em> were computed by <code>docs/data/build_demo_data.py</code> with the
+        Python package <code>mppflow</code>, a port of our original Java code, using Gurobi (or HiGHS when
+        Gurobi is unavailable); each plan records its solver. <em>Live</em> solves run <code>docs/js/engine.js</code>
+        and <code>docs/js/lp.js</code>, a line-by-line JavaScript port of the package's builtin simplex and
+        branch-and-bound solver, in a Web Worker. Parity tests require the JavaScript results to equal the
+        Python ones exactly, so a live solve that finishes within its time limit repeats the builtin Python run
+        pivot for pivot (with the same seed); where a binding time limit stops a solve depends on the machine.
+        The live time limit covers the whole solve, while <code>mppflow.plan(split=k)</code> gives each piece the full limit.
+        Everything runs locally; the page loads nothing from the network.</p>
+    </article>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>J. Yu and S. M. LaValle, &ldquo;Optimal Multirobot Path Planning on Graphs: Complete Algorithms and
+      Effective Heuristics,&rdquo; <cite>IEEE Transactions on Robotics</cite>, vol. 32, no. 5, pp. 1163&ndash;1177, 2016.</p>
+    <ul class="links">
+      <li><a href="https://doi.org/10.1109/TRO.2016.2593448">Paper (DOI 10.1109/TRO.2016.2593448)</a></li>
+      <li><a href="https://github.com/ru-arcl/multiagent-network-flow">Source code (mppflow and this demo)</a></li>
+      <li><a href="https://github.com/arc-l/optimal-mrppg-journal">Original Java code</a></li>
+      <li><a href="https://github.com/ru-arcl/multiagent-network-flow/blob/main/LICENSE">License (BSD 3-Clause)</a></li>
+    </ul>
+    <p>&copy; 2015&ndash;2026 <a href="https://github.com/ru-arcl">Algorithmic Robotics and Control (ARC) Lab</a>, Rutgers University.</p>
+  </div>
+</footer>
+
+<script src="data/demo-data.js"></script>
+<script src="js/lp.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/demo.js"></script>
+</body>
+</html>

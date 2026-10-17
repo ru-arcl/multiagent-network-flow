@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mppflow"
+dynamic = ["version"]
+description = "Optimal multi-robot path planning on graphs via network flow and integer linear programming"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [{ name = "Jingjin Yu" }, { name = "Steven M. LaValle" }]
+keywords = ["multi-robot path planning", "MAPF", "network flow", "integer linear programming", "ILP"]
+dependencies = ["numpy>=1.23.5", "scipy>=1.15.3"]  # older scipy: see mppflow/lp/highs.py
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Mathematics",
+]
+
+[project.urls]
+Homepage = "https://github.com/ru-arcl/multiagent-network-flow"
+Repository = "https://github.com/ru-arcl/multiagent-network-flow"
+Documentation = "https://ru-arcl.github.io/multiagent-network-flow/"
+"Original Java code" = "https://github.com/arc-l/optimal-mrppg-journal"
+
+[project.optional-dependencies]
+gurobi = ["gurobipy>=13"]  # the version tested; older pip releases carry expired bundled licenses
+viewer = ["matplotlib>=3.5"]
+test = ["pytest>=7.3"]  # 7.3: tmp_path_retention_policy
+
+[project.scripts]
+mppflow = "mppflow.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["mppflow*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "mppflow.__version__" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tests"]  # "tests" for the shared tests/helpers.py
+addopts = "--strict-markers"
+# a passed test's tmp_path is removed at once (the golden batch records regenerate whole
+# benchmark families, up to ~40 MB each); only failed tests keep theirs
+tmp_path_retention_policy = "failed"
+# an unclosed file or pipe (reported when it is garbage collected) fails the test
+filterwarnings = ["error::ResourceWarning", "error::pytest.PytestUnraisableExceptionWarning"]
+markers = [
+  "gurobi: requires gurobipy and a license",
+  "needs_gurobi: skipped unless gurobipy has a full-size license (probed once, after collection; MPPFLOW_TEST_GUROBI=0 skips)",
+  "slow: long-running (minutes); deselect with: pytest -m \"not slow\"",
+  "java: requires the original Java code, a JDK and Gurobi (differential tests)",
+]

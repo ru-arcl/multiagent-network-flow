@@ -1,0 +1,24 @@
+{
+ "name": "tor16_puzzle_branching",
+ "source": "YuLav16TOR p.1173 Sec. VI-B: 16-puzzle 'branching factor is over 1000', 36-puzzle '3.7x10^41 states and a branching factor of well over 10^6', 25-puzzle 'about 10^25 states'",
+ "counts": {
+  "3x3": {
+   "legal_joint_moves_incl_identity": 27,
+   "states_(N^2)!": 362880,
+   "bruteforce_check": 27
+  },
+  "4x4": {
+   "legal_joint_moves_incl_identity": 951,
+   "states_(N^2)!": 20922789888000,
+   "bruteforce_check": 951
+  },
+  "5x5": {
+   "legal_joint_moves_incl_identity": 107151,
+   "states_(N^2)!": 15511210043330985984000000
+  },
+  "6x6": {
+   "legal_joint_moves_incl_identity": 41921395,
+   "states_(N^2)!": 371993326789901217467999448150835200000000
+  }
+ }
+}

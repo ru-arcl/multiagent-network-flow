@@ -1,0 +1,27 @@
+{
+ "source": "ICRA'13 Theorem 2 / STAR'13 Theorem 3 / TOR'16 Theorem 1 ('there is a bijection between its solutions ... and the integer maximum multiflow solutions')",
+ "graph": {
+  "vertices": [
+   "u",
+   "w"
+  ],
+  "edges": [
+   [
+    "u",
+    "w"
+   ]
+  ]
+ },
+ "robot": {
+  "start": "u",
+  "goal": "u"
+ },
+ "T": 1,
+ "num_paths_in_MPP": 1,
+ "num_unit_flows_u0_to_uTprime": 2,
+ "flows": [
+  "u(0) -green-> u(1) -blue-> u(1)'",
+  "u(0) -> m1 -> m2 -> u(1) -blue-> u(1)'  (stay realised through the merge-split gadget)"
+ ],
+ "finding": "The flow->path map is surjective but not injective: a robot that waits at u can use either the green holdover arc or the gadget u(t)'->m1->m2->u(t+1). 'Bijection' is an overstatement (harmless for optimisation, but the gadget route costs 1 in c2 and blocks the edge). The Java compact model has no such duplicate (edge variables only for curV != nextV)."
+}

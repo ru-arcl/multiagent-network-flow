@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Build output and local runs (e.g. screenshots of tools/check_demo.mjs)
+/build/
+/dist/
+
+# Local runs: Gurobi logs and licenses, environment files
+*.log
+*.lic
+.env
+
+# Node
+node_modules/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store

@@ -1,0 +1,39 @@
+{
+ "source": "ICRA'13 Sec. II-A, Fig. 1 (not present in STAR'13 or TOR'16; TOR defers to [4] for objective incompatibility)",
+ "graph": "Junction L with leaves S2 (robot 2 start) and G1 (robot 1 goal); junction R with leaves S1 (robot 1 start) and G2 (robot 2 goal); L and R joined by a straight path of t unit edges and by an arc path of 1.5t unit edges (t even). The four solid segments are the unit edges S2-L, L-G1, S1-R, R-G2.",
+ "robots": {
+  "r1": [
+   "S1",
+   "G1"
+  ],
+  "r2": [
+   "S2",
+   "G2"
+  ]
+ },
+ "claims": {
+  "time_optimal": {
+   "makespan": "1.5t+2",
+   "total_distance": "2.5t+4"
+  },
+  "distance_optimal": {
+   "makespan": "2t+3",
+   "total_distance": "2t+4"
+  }
+ },
+ "interpretation": "time_optimal = lexicographic (makespan, distance) optimum; distance_optimal = lexicographic (distance, makespan) optimum",
+ "verified_t_values": [
+  2,
+  4,
+  6,
+  8
+ ],
+ "note": "'some large even number t' is stronger than needed: the claims already hold for t=2.",
+ "java_original_check": {
+  "t": 4,
+  "makespan": 8,
+  "min_total_distance_at_T=1.5t+2": 14,
+  "min_total_distance_at_T=2t+3": 12,
+  "agrees_with_claims": true
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "source": "ICRA'13 Sec. VI-A (numbers repeated in TOR'16 Sec. VI-B)",
+ "legal_moves_including_all_stay": {
+  "2x2": 3,
+  "2x3": 7,
+  "3x3": 27,
+  "3x4": 117,
+  "4x4": 951,
+  "5x5": 107151,
+  "6x6": 41921395
+ },
+ "legal_moves_computed": "transfer-matrix count of vertex-disjoint directed cycle sets (no 2-cycles) in the full grid; identical for every state of the fully occupied N^2-puzzle; brute force agrees for <= 4x4",
+ "claims": {
+  "16-puzzle branching factor": "over 1000 per step",
+  "36-puzzle branching factor": "well over 10^6",
+  "16-puzzle bidirectional search depth 3 states": "about 5 x 10^8 states, 64 bits each (TOR: 'over 4 GB raw memory')",
+  "25-puzzle state space": "about 10^25",
+  "36-puzzle state space": "3.7 x 10^41"
+ },
+ "state_counts": {
+  "9": 362880,
+  "16": 20922789888000,
+  "25": 1.5511210043330986e+25,
+  "36": 3.719933267899012e+41
+ },
+ "branching_factor_excluding_all_stay": {
+  "9-puzzle": 26,
+  "16-puzzle": 950,
+  "25-puzzle": 107150,
+  "36-puzzle": 41921394
+ },
+ "finding": "ICRA/TOR: '16-puzzle ... the branching factor is over 1000 per step' is false: every 16-puzzle state has exactly 951 legal joint moves (950 excluding the all-stay move). The 36-puzzle claim 'well over 10^6' holds (4.19e7)."
+}

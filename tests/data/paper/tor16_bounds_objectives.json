@@ -1,0 +1,557 @@
+{
+ "name": "tor16_bounds_objectives",
+ "source": "YuLav16TOR Sec. IV-C eq.(14)-(15) p.1168, Sec. IV-E p.1168-1169, Sec. VI-B p.1173",
+ "eq15_on_fig3_plan": {
+  "T": 4,
+  "arrival_times": [
+   3,
+   3,
+   1,
+   3,
+   4,
+   4,
+   3,
+   4,
+   4
+  ],
+  "sum_tf": 29,
+  "paper_eq15_value": 20,
+  "sum_max(tf-1,0)": 20
+ },
+ "eq15_search": {
+  "instances_tried": 221,
+  "strict_counterexample": {
+   "rows": 3,
+   "cols": 4,
+   "removed": [
+    6
+   ],
+   "starts": [
+    1,
+    7,
+    8,
+    3,
+    10
+   ],
+   "goals": [
+    11,
+    1,
+    8,
+    3,
+    10
+   ],
+   "T": 8,
+   "optimal_makespan": 6,
+   "true_total_time_opt": 21,
+   "paper15_opt": 17,
+   "min_true_total_among_paper15_optimal": 22,
+   "max_true_total_among_paper15_optimal": 22,
+   "paper15_worst_plan": [
+    [
+     1,
+     7,
+     8,
+     3,
+     10
+    ],
+    [
+     5,
+     3,
+     4,
+     2,
+     9
+    ],
+    [
+     9,
+     2,
+     4,
+     1,
+     8
+    ],
+    [
+     10,
+     1,
+     8,
+     5,
+     9
+    ],
+    [
+     11,
+     0,
+     8,
+     1,
+     10
+    ],
+    [
+     11,
+     1,
+     8,
+     2,
+     10
+    ],
+    [
+     11,
+     1,
+     8,
+     3,
+     10
+    ],
+    [
+     11,
+     1,
+     8,
+     3,
+     10
+    ],
+    [
+     11,
+     1,
+     8,
+     3,
+     10
+    ]
+   ],
+   "true_total_optimal_plan": {
+    "plan": [
+     [
+      1,
+      7,
+      8,
+      3,
+      10
+     ],
+     [
+      5,
+      11,
+      8,
+      3,
+      9
+     ],
+     [
+      1,
+      10,
+      8,
+      3,
+      5
+     ],
+     [
+      0,
+      9,
+      8,
+      3,
+      1
+     ],
+     [
+      4,
+      5,
+      8,
+      3,
+      0
+     ],
+     [
+      5,
+      1,
+      8,
+      3,
+      4
+     ],
+     [
+      9,
+      1,
+      8,
+      3,
+      5
+     ],
+     [
+      10,
+      1,
+      8,
+      3,
+      9
+     ],
+     [
+      11,
+      1,
+      8,
+      3,
+      10
+     ]
+    ],
+    "valid": true,
+    "arrival_times": [
+     8,
+     5,
+     0,
+     0,
+     8
+    ],
+    "sum_tf": 21,
+    "paper_eq15_value_recomputed": 18
+   },
+   "paper15_optimal_plan": {
+    "plan": [
+     [
+      1,
+      7,
+      8,
+      3,
+      10
+     ],
+     [
+      5,
+      3,
+      8,
+      2,
+      9
+     ],
+     [
+      9,
+      2,
+      4,
+      1,
+      8
+     ],
+     [
+      10,
+      1,
+      8,
+      5,
+      9
+     ],
+     [
+      11,
+      0,
+      8,
+      1,
+      10
+     ],
+     [
+      11,
+      1,
+      8,
+      2,
+      10
+     ],
+     [
+      11,
+      1,
+      8,
+      3,
+      10
+     ],
+     [
+      11,
+      1,
+      8,
+      3,
+      10
+     ],
+     [
+      11,
+      1,
+      8,
+      3,
+      10
+     ]
+    ],
+    "valid": true,
+    "arrival_times": [
+     4,
+     5,
+     3,
+     6,
+     4
+    ],
+    "sum_tf": 22,
+    "paper_eq15_value_recomputed": 17
+   }
+  },
+  "tie_counterexample": {
+   "rows": 2,
+   "cols": 4,
+   "removed": [],
+   "starts": [
+    5,
+    7,
+    6,
+    3,
+    4
+   ],
+   "goals": [
+    3,
+    7,
+    6,
+    0,
+    4
+   ],
+   "T": 5,
+   "optimal_makespan": 3,
+   "true_total_time_opt": 8,
+   "paper15_opt": 6,
+   "min_true_total_among_paper15_optimal": 8,
+   "max_true_total_among_paper15_optimal": 10,
+   "paper15_worst_plan": [
+    [
+     5,
+     7,
+     6,
+     3,
+     4
+    ],
+    [
+     6,
+     3,
+     7,
+     2,
+     4
+    ],
+    [
+     2,
+     7,
+     6,
+     1,
+     4
+    ],
+    [
+     3,
+     7,
+     6,
+     0,
+     4
+    ],
+    [
+     3,
+     7,
+     6,
+     0,
+     4
+    ],
+    [
+     3,
+     7,
+     6,
+     0,
+     4
+    ]
+   ]
+  },
+  "explanation": "x_i^t exists only for t=1..T (blue arcs (v(t),v(t)')); y_i^t=1 for t in [t_f,T] so Sum_{t=1..T} y_i^t = T-t_f+1 if t_f>=1 (T if t_f=0), hence T-Sum y = t_f-1 (or 0). Objective (15) = Sum t_f - #{i: t_f_i >= 1}, which under-counts each robot that starts on its goal but has to move away by 1 relative to robots that stay."
+ },
+ "eq15_hand_example": {
+  "edges": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    1,
+    4
+   ]
+  ],
+  "starts": [
+   1,
+   0
+  ],
+  "goals": [
+   1,
+   3
+  ],
+  "optimal_makespan": 3,
+  "plan": [
+   [
+    1,
+    0
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    1,
+    3
+   ]
+  ],
+  "arrival_times": [
+   3,
+   3
+  ],
+  "true_total": 6,
+  "paper_eq15": 4
+ },
+ "garage_corridor": {
+  "edges": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    5,
+    6
+   ],
+   [
+    6,
+    7
+   ],
+   [
+    7,
+    8
+   ],
+   [
+    4,
+    9
+   ]
+  ],
+  "starts": [
+   0,
+   8
+  ],
+  "goals": [
+   8,
+   0
+  ],
+  "T_min_LB": 8,
+  "optimal_makespan": 10,
+  "n*T_opt": 20,
+  "by_T": {
+   "10": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "11": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "12": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "13": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "14": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "15": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "16": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "17": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "18": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "19": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   },
+   "20": {
+    "min_total_distance": 18,
+    "min_total_arrival_time": 19,
+    "min_paper_eq15": 17
+   }
+  },
+  "note": "instance mirrors original Problem.getLongStraightWithOneGarageProblem (not in the paper)"
+ },
+ "star_main_case3": {
+  "edges": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ]
+  ],
+  "starts": [
+   0,
+   3
+  ],
+  "goals": [
+   3,
+   0
+  ],
+  "optimal_makespan": 4,
+  "plan": [
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    0
+   ]
+  ],
+  "T_min_LB": 2,
+  "note": "instance from original ILP/Main.java case 3 (not in the paper)"
+ },
+ "state_space_sizes": {
+  "9-puzzle (9!)": 362880,
+  "16-puzzle (16!)": 20922789888000,
+  "25-puzzle (25!) paper 'about 10^25'": 1.5511210043330986e+25,
+  "36-puzzle (36!) paper '3.7e41'": 3.7199332678990125e+41
+ }
+}

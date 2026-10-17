@@ -1,0 +1,84 @@
+{
+ "source": "STAR'13 Theorem 8 / Corollary 9 / Corollary 12 (permutation-invariant = unlabeled MPP, Problem 2). Not in ICRA'13 or TOR'16 (TOR only cites [17] for 'polynomial time' unlabeled results).",
+ "statement": "ell = max_{u in xI(A), v in xG(A)} dist(u,v); a time-expanded network with T = n + ell - 1 is 'necessary and sufficient' for a feasible solution to exist.",
+ "abstract_variant": "abstract/intro: finish time no more than n + V - 1 (uses ell <= V; actually ell <= V - 1)",
+ "counterexample_to_necessity": {
+  "graph": "path 0-1-2-3-4",
+  "vertices": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "edges": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    4
+   ]
+  ],
+  "starts": [
+   0,
+   4
+  ],
+  "goals": [
+   1,
+   3
+  ],
+  "ell": 3,
+  "bound": 4,
+  "unlabeled_min_makespan": 1
+ },
+ "tight_family": {
+  "graph": "hub h with n start leaves, corridor h - c1 - ... - cL - h2, h2 with n goal leaves",
+  "cases": [
+   {
+    "n": 2,
+    "L": 2
+   },
+   {
+    "n": 3,
+    "L": 1
+   },
+   {
+    "n": 3,
+    "L": 3
+   },
+   {
+    "n": 4,
+    "L": 2
+   }
+  ],
+  "ell": "L + 3",
+  "claim": "unlabeled min makespan == n + ell - 1 (bound attained)"
+ },
+ "fig3_instance_attains_bound": {
+  "ell": 3,
+  "n": 2,
+  "bound": 4,
+  "unlabeled_min_makespan": 4
+ },
+ "random_property_test": {
+  "seed": 20130101,
+  "instances": 150,
+  "grid": "4x4 / 5x5 with ~15% vertices removed (connected)",
+  "n_range": [
+   1,
+   5
+  ],
+  "expect": "unlabeled min makespan <= n + ell - 1 on every instance"
+ },
+ "finding": "The bound is a sufficient, worst-case-tight horizon, not a necessary one for a given instance ('necessary and sufficient' is an overstatement)."
+}

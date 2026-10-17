@@ -1,0 +1,9 @@
+{
+ "source": "STAR'13 Sec. 2 (CUG definition, Observation 1); TOR'16 footnote 4",
+ "claim_STAR": "disc agents of radius LESS THAN sqrt(2)/4 moving at unit speed on distinct grid edges (distinct tails, distinct heads) never collide; sqrt(2)/4 is the largest possible (L-shaped motion)",
+ "claim_TOR": "radii of NO MORE THAN sqrt(2)/4",
+ "min_center_distance_over_all_nonconflicting_edge_pairs_on_grid": 0.7071067811865476,
+ "attained_by": "L-shaped following move, both agents at edge midpoints (s=1/2)",
+ "radius_limit": 0.3535533905932738,
+ "finding": "At radius exactly sqrt(2)/4 the discs touch (center distance = 2r), so STAR's strict '<' is the correct statement and TOR's 'no more than' admits contact. Also STAR's 'any graph with unit edge length and no acute angles between adjacent edges is a CUG' ignores non-incident edges that come geometrically close (e.g. a unit-edge spiral with obtuse turns whose turns pass 0.3 apart)."
+}

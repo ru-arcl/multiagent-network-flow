@@ -1,0 +1,200 @@
+{
+ "name": "tor16_fig2_moves",
+ "source": "YuLav16TOR p.1165 (PDF p.3) Fig. 2 and Sec. II-A collision definition",
+ "cases": [
+  {
+   "case": "fig2a_follow",
+   "graph": "path 0-1-2",
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "before": [
+    1,
+    2
+   ],
+   "after": [
+    0,
+    1
+   ],
+   "expected_valid": true,
+   "violations": []
+  },
+  {
+   "case": "fig2b_headon_swap",
+   "graph": "single edge 0-1",
+   "edges": [
+    [
+     0,
+     1
+    ]
+   ],
+   "before": [
+    0,
+    1
+   ],
+   "after": [
+    1,
+    0
+   ],
+   "expected_valid": false,
+   "violations": [
+    "head-on collision robots 1,2 on edge 0-1"
+   ]
+  },
+  {
+   "case": "fig2c_meet",
+   "graph": "path 0-1-2",
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "before": [
+    0,
+    2
+   ],
+   "after": [
+    1,
+    1
+   ],
+   "expected_valid": false,
+   "violations": [
+    "meet collision: (1, 1)"
+   ]
+  },
+  {
+   "case": "rotation_triangle_full",
+   "graph": "triangle 0-1-2",
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "before": [
+    0,
+    1,
+    2
+   ],
+   "after": [
+    1,
+    2,
+    0
+   ],
+   "expected_valid": true,
+   "violations": []
+  },
+  {
+   "case": "rotation_4cycle_full",
+   "graph": "4-cycle 0-1-2-3",
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "before": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "after": [
+    1,
+    2,
+    3,
+    0
+   ],
+   "expected_valid": true,
+   "violations": []
+  },
+  {
+   "case": "chain_follow_3",
+   "graph": "path 0-1-2-3",
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "before": [
+    1,
+    2,
+    3
+   ],
+   "after": [
+    0,
+    1,
+    2
+   ],
+   "expected_valid": true,
+   "violations": []
+  },
+  {
+   "case": "stay_and_move_into_occupied_staying",
+   "graph": "path 0-1-2",
+   "edges": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "before": [
+    0,
+    1
+   ],
+   "after": [
+    1,
+    1
+   ],
+   "expected_valid": false,
+   "violations": [
+    "meet collision: (1, 1)"
+   ]
+  }
+ ]
+}

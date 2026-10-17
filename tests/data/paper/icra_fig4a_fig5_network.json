@@ -1,0 +1,84 @@
+{
+ "source": "ICRA'13 Fig. 4(a)/Fig. 5 (identical figures: STAR'13 Fig. 3(a)/(c), TOR'16 Fig. 4(a)/Fig. 5)",
+ "description": "Six-vertex tree used to illustrate the time-expanded network. Vertex names follow the figure labels; 'a' and 'b' are the two unlabeled spine vertices (a adjacent to s1-, s2-; b adjacent to s1+, s2+). Robot i: s_i^+ -> s_i^-.",
+ "vertices": [
+  "s1m",
+  "s2m",
+  "a",
+  "b",
+  "s1p",
+  "s2p"
+ ],
+ "edges": [
+  [
+   "s1m",
+   "a"
+  ],
+  [
+   "s2m",
+   "a"
+  ],
+  [
+   "a",
+   "b"
+  ],
+  [
+   "s1p",
+   "b"
+  ],
+  [
+   "b",
+   "s2p"
+  ]
+ ],
+ "starts": [
+  "s1p",
+  "s2p"
+ ],
+ "goals": [
+  "s1m",
+  "s2m"
+ ],
+ "shortest_path_lengths": [
+  3,
+  3
+ ],
+ "makespan_lower_bound_Tmin": 3,
+ "network_T2": {
+  "num_nodes": 50,
+  "num_arcs_including_2_loopbacks": 76,
+  "formula": "nodes=(2T+1)|V|+2|E|T, arcs=T|V| green + T|V| blue + 5|E|T gadget + n loopbacks"
+ },
+ "max_multiflow_value_by_T": {
+  "1": 0,
+  "2": 0,
+  "3": 1,
+  "4": 2,
+  "5": 2
+ },
+ "min_makespan": 4,
+ "note_T2_infeasible": "The figure's T=2 network admits no full flow (value 0): it is illustrative only.",
+ "eq7_objective_with_green_cost_1_at_T4": {
+  "min": 8,
+  "max": 8,
+  "equals_nT": true,
+  "comment": "With the paper's c2 (green holdover arcs cost 1) the 'distance' objective (ICRA eq. 7, TOR eq. 12/16) is constant n*T over every feasible flow."
+ },
+ "eq7_objective_with_green_cost_0_at_T4": {
+  "min": 6,
+  "comment": "= sum of shortest path lengths; STAR Sec. 5.1 sets holdover cost to 0, and the Java Distance solver only costs curV != nextV arcs."
+ },
+ "min_total_distance": 6,
+ "min_total_arrival_time": 7,
+ "unlabeled_STAR_problem2": {
+  "ell": 3,
+  "bound_n_plus_ell_minus_1": 4,
+  "unlabeled_min_makespan": 4,
+  "bound_attained": true
+ },
+ "figure_inconsistency": "In ICRA/TOR Fig. 5 the loopback e2 (and in TOR the bold blue goal arcs) start at the spine row 'a' at 2', while the s2^- label (and Fig. 4(a)) put s2^- on the offset leaf row; STAR Fig. 3(c) (no loopbacks) labels consistently.",
+ "java_original_check": {
+  "PathPlanner.planPathsAdvanced makespan": 4,
+  "PathPlanner.planPathsAdvancedTD(T=4) total distance": 6
+ }
+}

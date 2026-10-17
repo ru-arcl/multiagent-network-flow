@@ -1,0 +1,3 @@
+# The sdist holds the library only. The tests need the whole checkout (tests/, docs/ and
+# tools/), so run them from a clone of the repository.
+prune tests

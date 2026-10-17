@@ -1,0 +1,71 @@
+{
+  "generator": "tools/golden/record.py",
+  "recorded": "2026-10-13",
+  "original_repository": "https://github.com/arc-l/optimal-mrppg-journal",
+  "original_commit": "3dd2e239d333ca3f665f5868d21bcdbdd8f04cc0",
+  "gurobi_version": "13.0.2",
+  "gurobi_threads": 1,
+  "java_version": "17.0.20.1",
+  "java_vendor": "Eclipse Adoptium",
+  "java_vm": "OpenJDK 64-Bit Server VM 17.0.20.1+1",
+  "os": "Linux amd64",
+  "harness_restarts": 34,
+  "groups": {
+    "graph": {
+      "cases": 88,
+      "results": 80,
+      "exceptions": 5,
+      "hangs": 3,
+      "jvm_exits": 0
+    },
+    "problem": {
+      "cases": 49,
+      "results": 44,
+      "exceptions": 4,
+      "hangs": 1,
+      "jvm_exits": 0
+    },
+    "pathfinder": {
+      "cases": 37,
+      "results": 35,
+      "exceptions": 2,
+      "hangs": 0,
+      "jvm_exits": 0
+    },
+    "models": {
+      "cases": 34,
+      "results": 34,
+      "exceptions": 0,
+      "hangs": 0,
+      "jvm_exits": 0
+    },
+    "solvers": {
+      "cases": 53,
+      "results": 49,
+      "exceptions": 1,
+      "hangs": 3,
+      "jvm_exits": 0
+    },
+    "planner": {
+      "cases": 123,
+      "results": 103,
+      "exceptions": 10,
+      "hangs": 10,
+      "jvm_exits": 0
+    },
+    "heuristic": {
+      "cases": 32,
+      "results": 28,
+      "exceptions": 4,
+      "hangs": 0,
+      "jvm_exits": 0
+    },
+    "main": {
+      "cases": 54,
+      "results": 32,
+      "exceptions": 22,
+      "hangs": 0,
+      "jvm_exits": 0
+    }
+  }
+}

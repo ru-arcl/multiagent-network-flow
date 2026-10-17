@@ -1,0 +1,176 @@
+{
+ "name": "tor16_fig8_split",
+ "source": "YuLav16TOR p.1170 (PDF p.8), Fig. 8 and Sec. V-B text",
+ "graph": {
+  "type": "grid",
+  "rows": 4,
+  "cols": 4,
+  "removed": [],
+  "vertex_id": "row*cols+col, row 0 at top, col 0 at left",
+  "note": "text says '3 x 3 grid' but Fig. 8 shows 4x4 vertices (3x3 cells); the 9-puzzle's '3 x 3 grid' is 3x3 vertices"
+ },
+ "starts": [
+  13,
+  8
+ ],
+ "goals": [
+  0,
+  7
+ ],
+ "starts_rowcol": [
+  [
+   3,
+   1
+  ],
+  [
+   2,
+   0
+  ]
+ ],
+ "goals_rowcol": [
+  [
+   0,
+   0
+  ],
+  [
+   1,
+   3
+  ]
+ ],
+ "drawn_shortest_paths_rowcol": {
+  "robot1_orange": [
+   [
+    3,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    0
+   ]
+  ],
+  "robot2_green": [
+   [
+    2,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ]
+  ]
+ },
+ "path_midpoints_rowcol": [
+  [
+   1,
+   1
+  ],
+  [
+   1,
+   1
+  ]
+ ],
+ "intermediate_goals_rowcol": [
+  [
+   1,
+   1
+  ],
+  [
+   2,
+   2
+  ]
+ ],
+ "intermediate_goals": [
+  5,
+  10
+ ],
+ "expected": {
+  "shortest_path_lengths": [
+   4,
+   4
+  ],
+  "optimal_makespan_unsplit": 4,
+  "optimal_plan_unsplit_example": [
+   [
+    13,
+    8
+   ],
+   [
+    9,
+    4
+   ],
+   [
+    8,
+    5
+   ],
+   [
+    4,
+    6
+   ],
+   [
+    0,
+    7
+   ]
+  ],
+  "child1_shortest_paths": [
+   2,
+   2
+  ],
+  "child2_shortest_paths": [
+   2,
+   2
+  ],
+  "child1_optimal_makespan": 3,
+  "child2_optimal_makespan": 2,
+  "two_way_split_total_makespan": 5,
+  "robot2_intermediate_on_a_shortest_path": true,
+  "intermediate_pairs_on_shortest_paths_giving_2_plus_2": [
+   [
+    [
+     2,
+     0
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   [
+    [
+     2,
+     0
+    ],
+    [
+     2,
+     2
+    ]
+   ]
+  ]
+ },
+ "notes": [
+  "Paper claims both child instances require a time expansion of two steps. Child 1 (starts (3,1),(2,0) -> (1,1),(2,2)) is NOT solvable in 2 steps: both robots' unique 2-step paths pass (2,1) at t=1 (meet collision); it needs 3 steps, so this split yields makespan 5 while the unsplit optimum is 4."
+ ]
+}

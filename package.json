@@ -1,0 +1,19 @@
+{
+  "name": "mppflow-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser engine of mppflow (docs/js): parity tests against the Python package",
+  "license": "BSD-3-Clause",
+  "author": "Jingjin Yu and Steven M. LaValle",
+  "homepage": "https://ru-arcl.github.io/multiagent-network-flow/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ru-arcl/multiagent-network-flow.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test docs/js/test/"
+  }
+}
